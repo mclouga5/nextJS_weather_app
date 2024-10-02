@@ -8,7 +8,7 @@ import {
   useQuery,
 } from '@tanstack/react-query'
 import axios from "axios";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, fromUnixTime } from "date-fns";
 import Container from "@/components/Container";
 import WeatherIcon from "@/components/WeatherIcon";
 import { convertKelvinToCelsius } from "@/utils/KelvinToCelsius";
@@ -85,8 +85,6 @@ export default function Home() {
   });
 
   const todayData = data?.list[0];
-  const todaySunrise = data?.city.sunrise ?? 1702949452;
-  const todaySunset = data?.city.sunset ?? 1702949452;
 
   if (isPending)
     return(
@@ -160,6 +158,7 @@ export default function Home() {
 
             </div>
            </Container>
+           {/* Extra details on today's weather */}
            <Container className="bg-amber-400/80  px-6 gap-4 justify-between overflow-x-auto">
                   <WeatherDetails
                     visability={metersToKilometers(
@@ -167,8 +166,8 @@ export default function Home() {
                     )}
                     airPressure={`${todayData?.main.pressure} hPa`}
                     humidity={`${todayData?.main.humidity}%`}
-                    sunrise={formatUnixToTime(todaySunrise)}
-                    sunset={formatUnixToTime(todaySunset)}
+                    sunrise={format(fromUnixTime(data?.city.sunrise ?? 1702949452), "HH:mm")}
+                    sunset={format(fromUnixTime(data?.city.sunset ?? 1702949452), "HH:mm")}
                     windSpeed={convertWindSpeed(todayData?.wind.speed ?? 1.64)}
                   />
                 </Container>
