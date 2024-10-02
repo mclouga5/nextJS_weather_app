@@ -13,6 +13,10 @@ import Container from "@/components/Container";
 import WeatherIcon from "@/components/WeatherIcon";
 import { convertKelvinToCelsius } from "@/utils/KelvinToCelsius";
 import { getDayOrNightIcon } from "@/utils/DayOrNightIcon";
+import WeatherDetails from "@/components/WeatherDetails";
+import { convertWindSpeed } from "@/utils/convertWindSpeed";
+import { metersToKilometers } from "@/utils/metersToKilometers";
+import { formatUnixToTime } from "@/utils/formatUnixtoTime";
 
 interface WeatherDetail {
   dt: number;
@@ -81,6 +85,8 @@ export default function Home() {
   });
 
   const todayData = data?.list[0];
+  const todaySunrise = data?.city.sunrise ?? 1702949452;
+  const todaySunset = data?.city.sunset ?? 1702949452;
 
   if (isPending)
     return(
@@ -143,7 +149,7 @@ export default function Home() {
                   {format(parseISO(todayTimeData.dt_txt), "h:mm a")}
                 </p>
 
-                <WeatherIcon iconName={getDayOrNightIcon(todayTimeData.weather[0].icon, todayTimeData.dt_txt)}/>
+                <WeatherIcon iconname={getDayOrNightIcon(todayTimeData.weather[0].icon, todayTimeData.dt_txt)}/>
 
                 <p>
                   {convertKelvinToCelsius(todayTimeData.main.temp ?? 0)}°
@@ -153,14 +159,22 @@ export default function Home() {
               )}
 
             </div>
-
-
-
            </Container>
-        </div>
-
-
-      </section>
+           <Container className="bg-amber-400/80  px-6 gap-4 justify-between overflow-x-auto">
+                  <WeatherDetails
+                    visability={metersToKilometers(
+                      todayData?.visibility ?? 10000
+                    )}
+                    airPressure={`${todayData?.main.pressure} hPa`}
+                    humidity={`${todayData?.main.humidity}%`}
+                    sunrise={formatUnixToTime(todaySunrise)}
+                    sunset={formatUnixToTime(todaySunset)}
+                    windSpeed={convertWindSpeed(todayData?.wind.speed ?? 1.64)}
+                  />
+                </Container>
+                {/* right  */}
+              </div>
+            </section>
 
       {/* 7 day forecast data*/}
       <section className="flex w-full flex-col gap-4">
