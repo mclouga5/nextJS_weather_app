@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { MdOutlineLocationOn, MdWbSunny } from 'react-icons/md';
+import { MdOutlineLocationOn } from 'react-icons/md';
+import { GiStripedSun } from "react-icons/gi";
 import { MdMyLocation } from 'react-icons/md';
 import SearchBox from './SearchBox';
 import { useState } from 'react';
@@ -31,7 +32,6 @@ export default function Navbar({ location }: Props) {
         );
 
         const suggestions = response.data.list.map((item: any) => String(item.name + ', ' + item.sys.country));
-        console.log(response)
         setSuggestions(suggestions);
         setError('');
         setShowSuggestions(true);
@@ -88,20 +88,22 @@ export default function Navbar({ location }: Props) {
   return (
     <>
       <nav className='shadow-sm  sticky top-0 left-0 z-50 bg-white'>
-        <div className='h-[80px]     w-full    flex   justify-between items-center  max-w-7xl px-3 mx-auto'>
-          <p className='flex items-center justify-center gap-2  '>
-            <h2 className='text-gray-500 text-3xl'>Weather</h2>
-            <MdWbSunny className='text-3xl mt-1 text-yellow-300' />
-          </p>
+        <div className='h-[80px] w-full flex justify-between items-center max-w-7xl px-3 mx-auto'>
+          <h2 className='flex items-center justify-center gap-2  '>
+            <p className='text-gray-500 text-3xl'>Weather</p>
+            <GiStripedSun className='text-3xl mt-1 text-amber-300' />
+          </h2>
 
-          <section className='flex gap-2 items-center'>
+          <section className='flex gap-3 items-center'>
             <MdMyLocation
               title='Your Current Location'
               onClick={handleCurrentLocation}
               className='text-2xl  text-gray-400 hover:opacity-80 cursor-pointer'
             />
-            <MdOutlineLocationOn className='text-3xl' />
-            <p className='text-slate-900/80 text-sm'> {location} </p>
+            <div className='flex items-center'>
+              <MdOutlineLocationOn className='text-3xl' />
+              <p className='text-slate-900/80 text-sm'> {location} </p>
+            </div>
             <div className='relative hidden md:flex'>
 
               {/* SearchBox */}

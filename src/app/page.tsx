@@ -2,7 +2,7 @@
 
 import Navbar from "@/components/Navbar";
 import Image from "next/image";
-import { QueryClient, QueryClientProvider, useQuery,} from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import axios from "axios";
 import { format, parseISO, fromUnixTime } from "date-fns";
 import Container from "@/components/Container";
@@ -74,10 +74,10 @@ interface WeatherData {
 }
 
 export default function Home() {
-  const [place, setPlace] = useAtom(placeAtom);
+  const [place] = useAtom(placeAtom);
   const [loadingCity] = useAtom(loadingCityAtom);
 
-  const { isPending, error, data, refetch } = useQuery<WeatherData>({
+  const { isPending, data, refetch } = useQuery<WeatherData>({
     queryKey: ['repoData'],
     queryFn: async () => {
       const {data} = await axios.get(
@@ -101,12 +101,11 @@ export default function Home() {
     )
   ];
 
-  // Filtering data to get the first entry after 6 AM for each unique date
   const firstDataForEachDate = uniqueDates.map((date) => {
     return data?.list.find((entry) => {
       const entryDate = new Date(entry.dt * 1000).toISOString().split("T")[0];
       const entryTime = new Date(entry.dt * 1000).getHours();
-      return entryDate === date && entryTime >= 6;
+      return entryDate === date && entryTime >= 9;
     });
   });
 
@@ -143,7 +142,7 @@ export default function Home() {
               {convertKelvinToCelsius(todayData?.main.temp ?? 296.37)}°
               </span>
 
-              <p className="text-xs space-x-1 whitespace-nowrap">
+              <p className="text-xs space-x-1 whitespace-nowrap my-2">
                       <span> Feels like</span>
                       <span>
                         {convertKelvinToCelsius(
@@ -167,12 +166,12 @@ export default function Home() {
 
            {/* Time and Weather Icon */}
             <div className="flex gap-1 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
-              {data?.list.map((todayTimeData, i) =>
+              {data?.list.slice(0, 7).map((todayTimeData, i) =>
               <div
               key={i}
-              className="flex flex-col justify-between gap-2 items-center text-xs font-semibold"
+              className="flex flex-col justify-between gap-2 items-center text-xs"
               >
-                <p className="whitespace-nowrap">
+                <p className="whitespace-nowrap font-semibold">
                   {format(parseISO(todayTimeData.dt_txt), "h:mm a")}
                 </p>
 
@@ -202,7 +201,7 @@ export default function Home() {
                     )}
                   />
             </Container>
-            <Container className="bg-amber-400/80  px-6 gap-4 justify-between overflow-x-auto">
+            <Container className="px-6 gap-4 justify-between overflow-x-auto">
                   <WeatherDetails
                     visability={metersToKilometers(
                       todayData?.visibility ?? 10000
@@ -215,8 +214,6 @@ export default function Home() {
                   />
             </Container>
         </div>
-
-
       </section>
 
       {/* 7 day forecast data*/}
@@ -226,7 +223,7 @@ export default function Home() {
                 <ForecastWeatherDetail
                   key={i}
                   description={d?.weather[0].description ?? ""}
-                  weatehrIcon={d?.weather[0].icon ?? "01d"}
+                  weatherIcon={d?.weather[0].icon ?? "01d"}
                   day={d ? format(parseISO(d.dt_txt), "EEEE") : "EEEE"}
                   date={d ? formatDateWithSuffix(d.dt_txt) : format(new Date(), "EEEE")}
                   feels_like={d?.main.feels_like ?? 0}

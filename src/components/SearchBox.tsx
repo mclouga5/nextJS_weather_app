@@ -1,4 +1,4 @@
-import { HTMLInputTypeAttribute } from 'react';
+import React from 'react';
 import { cn } from "@/utils/cn";
 import { IoMdSearch } from "react-icons/io";
 

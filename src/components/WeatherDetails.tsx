@@ -26,6 +26,16 @@ export default function WeatherDetails(props: WeatherDetailProps) {
   return (
     <>
       <SingleWeatherDetail
+        icon={<LuSunrise />}
+        information="Sunrise"
+        value={sunrise}
+      />
+      <SingleWeatherDetail
+        icon={<LuSunset />}
+        information="Sunset"
+        value={sunset}
+      />
+      <SingleWeatherDetail
         icon={<LuEye />}
         information="Visability"
         value={visability}
@@ -45,16 +55,6 @@ export default function WeatherDetails(props: WeatherDetailProps) {
         information="Air Pressure"
         value={airPressure}
       />
-      <SingleWeatherDetail
-        icon={<LuSunrise />}
-        information="Sunrise"
-        value={sunrise}
-      />
-      <SingleWeatherDetail
-        icon={<LuSunset />}
-        information="Sunset"
-        value={sunset}
-      />
     </>
   );
 }
@@ -67,8 +67,8 @@ export interface SingleWeatherDetailProps {
 
 function SingleWeatherDetail(props: SingleWeatherDetailProps) {
   return (
-    <div className="flex flex-col justify-between gap-2 items-center text-xs font-semibold text-black/80">
-      <p className="whitespace-nowrap">{props.information}</p>
+    <div className="flex flex-col justify-between gap-2 items-center text-xs text-black/80">
+      <p className="whitespace-nowrap font-semibold">{props.information}</p>
       <div className="text-3xl">{props.icon}</div>
       <p>{props.value}</p>
     </div>
