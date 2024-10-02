@@ -92,10 +92,6 @@ export default function Home() {
     refetch();
   }, [place, refetch]);
 
-  const todayData = data?.list[0];
-
-  console.log(data)
-
   const uniqueDates = [
     ...new Set(
       data?.list.map(
@@ -112,10 +108,25 @@ export default function Home() {
     });
   });
 
+  const currentTime = new Date().getTime();
+
+  const closestForecast = data?.list.reduce((closest, forecast) => {
+    const forecastTime = new Date(forecast.dt * 1000).getTime();
+    const closestTime = new Date(closest.dt * 1000).getTime();
+
+    return Math.abs(forecastTime - currentTime) < Math.abs(closestTime - currentTime)
+      ? forecast
+      : closest;
+  }, data?.list[0]);
+
+  const todayData = closestForecast;
+
   const backgroundImage = getBackgroundImage(
     todayData?.weather[0].main ?? '',
     todayData?.weather[0].description ?? ''
   );
+
+  console.log(todayData);
 
   if (isPending)
     return(
@@ -139,51 +150,51 @@ export default function Home() {
         <>
       <section className="space-y-4">
         <div className="space-y-2">
-          <h2 className="flex gap-1 text-2xl items-end">
-          {format(parseISO(todayData?.dt_txt ?? ""), "EEEE")}
-          </h2>
+           <h2 className="flex gap-1 text-2xl items-end text-gray-500">Today</h2>
 
            <Container
            className="gap-10 px-6 items-center"
            >
-            {/* Temperature */}
             <div
-            className="flex flex-col p-4 h-full rounded items-center justify-center"
+            className="flex flex-col gap-1 items-center rounded p-2 px-6 my-2"
             style={{
               backgroundImage: `url(${backgroundImage.src})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
-            }}>
-
-              <span className="text-5xl">
-              {convertKelvinToCelsius(todayData?.main.temp ?? 296.37)}°
-              </span>
-
-              <p className="text-sm space-x-1 whitespace-nowrap my-2 bg-gray-200/60 rounded p-1">
-                      <span> Feels like</span>
-                      <span>
-                        {convertKelvinToCelsius(
-                          todayData?.main.feels_like ?? 0
-                        )}
-                        °
-                      </span>
+          }}>
+              <WeatherIcon iconname={todayData?.weather[0].icon ?? "01d"}/>
+              <p className="bg-gray-200/60 rounded p-1">
+                {todayData ? format(parseISO(todayData.dt_txt), "EEEE") : "EEEE"}
               </p>
-              <p className="text-sm space-x-2 bg-gray-200/60 rounded p-1">
-                      <span>
-                        {convertKelvinToCelsius(todayData?.main.temp_min ?? 0)}
-                        °↓{" "}
-                      </span>
-                      <span>
-                        {" "}
-                        {convertKelvinToCelsius(todayData?.main.temp_max ?? 0)}
-                        °↑
-                      </span>
+              <p className="text-sm bg-gray-200/60 rounded p-1">
+                {todayData ? formatDateWithSuffix(todayData.dt_txt) : format(new Date(), "EEEE")}
               </p>
-            </div>
+          </div>
+          {/* Temperature */}
+          <div
+            className="flex flex-col p-4 h-full rounded items-center justify-center">
+
+          <span className="text-5xl">
+            {convertKelvinToCelsius(todayData?.main.temp ?? 296.37)}°
+          </span>
+
+          <p className="text-sm space-x-1 whitespace-nowrap my-2">
+            <span> Feels like</span>
+            <span>
+              {convertKelvinToCelsius(todayData?.main.feels_like ?? 0)}°
+            </span>
+          </p>
+          <p className="text-sm space-x-2">
+            <span>{convertKelvinToCelsius(todayData?.main.temp_min ?? 0)}°↓{" "}
+            </span>
+            <span>{" "}{convertKelvinToCelsius(todayData?.main.temp_max ?? 0)}°↑
+            </span>
+          </p>
+          </div>
 
            {/* Time and Weather Icon */}
             <div className="flex gap-1 sm:gap-16 overflow-x-auto w-full justify-between pr-3">
-              {data?.list.slice(0, 7).map((todayTimeData, i) =>
+              {data?.list.slice(0, 9).map((todayTimeData, i) =>
               <div
               key={i}
               className="flex flex-col justify-between gap-2 items-center text-xs"
@@ -203,11 +214,11 @@ export default function Home() {
 
             </div>
            </Container>
-           {/* Extra details on today's weather */}
 
+           {/* Extra details on today's weather */}
             </div>
             <div className="flex gap-4">
-            <Container className="w-fit  justify-center flex-col px-6 items-center ">
+            <Container className="w-fit justify-center flex-col px-8 items-center ">
                   <p className=" capitalize text-center">
                     {todayData?.weather[0].description}{" "}
                   </p>
@@ -235,7 +246,7 @@ export default function Home() {
 
       {/* 7 day forecast data*/}
       <section className="flex w-full flex-col gap-4">
-        <p className="text-2xl"> 7 Day Forecast </p>
+        <p className="text-2xl text-gray-500"> 7 Day Forecast </p>
         {firstDataForEachDate.map((d, i) => (
                 <ForecastWeatherDetail
                   key={i}

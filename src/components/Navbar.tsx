@@ -89,19 +89,22 @@ export default function Navbar({ location }: Props) {
     <>
       <nav className='shadow-sm  sticky top-0 left-0 z-50 bg-white'>
         <div className='h-[80px] w-full flex justify-between items-center max-w-7xl px-3 mx-auto'>
+          <div className='flex items-end gap-2'>
           <h2 className='flex items-center justify-center gap-2  '>
             <p className='text-gray-500 text-3xl'>Weather</p>
             <GiStripedSun className='text-3xl mt-1 text-amber-300' />
           </h2>
+          <p className='text-xs mb-1 text-gray-600 font-serif'>By Aoife</p>
+          </div>
 
-          <section className='flex gap-3 items-center'>
+          <section className='flex gap-4 items-center'>
             <MdMyLocation
               title='Your Current Location'
               onClick={handleCurrentLocation}
-              className='text-2xl  text-gray-400 hover:opacity-80 cursor-pointer'
+              className='text-2xl text-gray-500 hover:opacity-80 cursor-pointer'
             />
             <div className='flex items-center'>
-              <MdOutlineLocationOn className='text-3xl' />
+              <MdOutlineLocationOn className='text-3xl text-gray-600' />
               <p className='text-slate-900/80 text-sm'> {location} </p>
             </div>
             <div className='relative hidden md:flex'>
