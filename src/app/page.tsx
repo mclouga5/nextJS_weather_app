@@ -17,6 +17,13 @@ import { formatDateWithSuffix } from "@/utils/getOrdinalSuffix";
 import { loadingCityAtom, placeAtom } from "./atom";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
+import scatteredClouds from '@/media/scatteredClouds.jpg';
+import night from '@/media/night.jpg';
+import heavyRain from '@/media/heavyRain.jpg';
+import lightRain from '@/media/lightRain.png';
+import sun from '@/media/sunny.jpg';
+import overcastClouds from '@/media/overcastClouds.png';
+import snow from '@/media/snow.jpg';
 
 interface WeatherDetail {
   dt: number;
@@ -93,6 +100,8 @@ export default function Home() {
 
   const todayData = data?.list[0];
 
+  console.log(data)
+
   const uniqueDates = [
     ...new Set(
       data?.list.map(
@@ -109,15 +118,44 @@ export default function Home() {
     });
   });
 
+  const getBackgroundImage = (weatherMain: string, weatherDescription: string) => {
+    switch (weatherMain) {
+      case 'Clear':
+        return sun; // Image for Clear weather
+
+      case 'Snow':
+        return snow; // Image for Snow (single image for all snow conditions)
+
+      case 'Rain':
+        if (weatherDescription.includes('light')) return lightRain; // Image for Light Rain
+        if (weatherDescription.includes('heavy')) return heavyRain; // Image for Heavy Rain
+        return lightRain; // Default for other rain descriptions
+
+      case 'Clouds':
+        if (weatherDescription === 'scattered clouds') return scatteredClouds;
+        if (weatherDescription === 'overcast clouds') return overcastClouds; // Image for Overcast Clouds
+        return scatteredClouds; // Default for other cloud conditions
+
+      default:
+        return sun; // Default image
+    }
+  };
+
+  const backgroundImage = getBackgroundImage(
+    todayData?.weather[0].main ?? '',
+    todayData?.weather[0].description ?? ''
+  );
+
   if (isPending)
     return(
-    <div className="flex items-center min-h-screen justify-center">
-      <p className="animate-bounce"> Loading... </p>
+    <div
+    className="flex flex-col gap-4 min-h-screen w-full items-center justify-center">
+      <WeatherSkeleton />
     </div>
     );
 
   return (
-    <div className="flex flex-col gap-4 bg-gray-100 min-h-screen">
+    <div className="flex flex-col gap-4 min-h-screen bg-gray-100">
       <Navbar
       location={data?.city.name}/>
 
@@ -134,7 +172,13 @@ export default function Home() {
           {format(parseISO(todayData?.dt_txt ?? ""), "EEEE")}
           </h2>
 
-           <Container className="gap-10 px-6 items-center">
+           <Container
+           className="gap-10 px-6 items-center"
+           style={{
+            backgroundImage: `url(${backgroundImage.src})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}>
             {/* Temperature */}
             <div className="flex flex-col px-4">
 
@@ -242,6 +286,12 @@ export default function Home() {
                   )}
                   visability={`${metersToKilometers(d?.visibility ?? 10000)} `}
                   windSpeed={`${convertWindSpeed(d?.wind.speed ?? 1.64)} `}
+                  style={{
+                    backgroundImage: `url(${getBackgroundImage(
+                      d?.weather[0].main ?? '', d?.weather[0].description ?? '').src})`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                  }}
                 />
               ))}
       </section>
@@ -274,6 +324,8 @@ function WeatherSkeleton() {
           ))}
         </div>
       </div>
+
+      <p className="animate-bounce w-full text-center justify-center font-semibold text-gray-500"> Loading...</p>
 
       {/* 7 days forecast skeleton */}
       <div className="flex flex-col gap-4 animate-pulse">
