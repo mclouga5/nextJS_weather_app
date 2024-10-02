@@ -159,7 +159,21 @@ export default function Home() {
             </div>
            </Container>
            {/* Extra details on today's weather */}
-           <Container className="bg-amber-400/80  px-6 gap-4 justify-between overflow-x-auto">
+
+            </div>
+            <div className="flex gap-4">
+            <Container className="w-fit  justify-center flex-col px-4 items-center ">
+                  <p className=" capitalize text-center">
+                    {todayData?.weather[0].description}{" "}
+                  </p>
+                  <WeatherIcon
+                    iconname={getDayOrNightIcon(
+                      todayData?.weather[0].icon ?? "",
+                      todayData?.dt_txt ?? ""
+                    )}
+                  />
+            </Container>
+            <Container className="bg-amber-400/80  px-6 gap-4 justify-between overflow-x-auto">
                   <WeatherDetails
                     visability={metersToKilometers(
                       todayData?.visibility ?? 10000
@@ -170,10 +184,11 @@ export default function Home() {
                     sunset={format(fromUnixTime(data?.city.sunset ?? 1702949452), "HH:mm")}
                     windSpeed={convertWindSpeed(todayData?.wind.speed ?? 1.64)}
                   />
-                </Container>
-                {/* right  */}
-              </div>
-            </section>
+            </Container>
+        </div>
+
+
+      </section>
 
       {/* 7 day forecast data*/}
       <section className="flex w-full flex-col gap-4">
