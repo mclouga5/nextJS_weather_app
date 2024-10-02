@@ -17,13 +17,7 @@ import { formatDateWithSuffix } from "@/utils/getOrdinalSuffix";
 import { loadingCityAtom, placeAtom } from "./atom";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
-import scatteredClouds from '@/media/scatteredClouds.jpg';
-import night from '@/media/night.jpg';
-import heavyRain from '@/media/heavyRain.jpg';
-import lightRain from '@/media/lightRain.png';
-import sun from '@/media/sunny.jpg';
-import overcastClouds from '@/media/overcastClouds.png';
-import snow from '@/media/snow.jpg';
+import { getBackgroundImage } from "@/utils/getBackgroundImage";
 
 interface WeatherDetail {
   dt: number;
@@ -118,29 +112,6 @@ export default function Home() {
     });
   });
 
-  const getBackgroundImage = (weatherMain: string, weatherDescription: string) => {
-    switch (weatherMain) {
-      case 'Clear':
-        return sun; // Image for Clear weather
-
-      case 'Snow':
-        return snow; // Image for Snow (single image for all snow conditions)
-
-      case 'Rain':
-        if (weatherDescription.includes('light')) return lightRain; // Image for Light Rain
-        if (weatherDescription.includes('heavy')) return heavyRain; // Image for Heavy Rain
-        return lightRain; // Default for other rain descriptions
-
-      case 'Clouds':
-        if (weatherDescription === 'scattered clouds') return scatteredClouds;
-        if (weatherDescription === 'overcast clouds') return overcastClouds; // Image for Overcast Clouds
-        return scatteredClouds; // Default for other cloud conditions
-
-      default:
-        return sun; // Default image
-    }
-  };
-
   const backgroundImage = getBackgroundImage(
     todayData?.weather[0].main ?? '',
     todayData?.weather[0].description ?? ''
@@ -174,19 +145,21 @@ export default function Home() {
 
            <Container
            className="gap-10 px-6 items-center"
-           style={{
-            backgroundImage: `url(${backgroundImage.src})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}>
+           >
             {/* Temperature */}
-            <div className="flex flex-col px-4">
+            <div
+            className="flex flex-col p-4 h-full rounded items-center justify-center"
+            style={{
+              backgroundImage: `url(${backgroundImage.src})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+            }}>
 
               <span className="text-5xl">
               {convertKelvinToCelsius(todayData?.main.temp ?? 296.37)}°
               </span>
 
-              <p className="text-xs space-x-1 whitespace-nowrap my-2">
+              <p className="text-sm space-x-1 whitespace-nowrap my-2 bg-gray-200/60 rounded p-1">
                       <span> Feels like</span>
                       <span>
                         {convertKelvinToCelsius(
@@ -195,7 +168,7 @@ export default function Home() {
                         °
                       </span>
               </p>
-              <p className="text-xs space-x-2">
+              <p className="text-sm space-x-2 bg-gray-200/60 rounded p-1">
                       <span>
                         {convertKelvinToCelsius(todayData?.main.temp_min ?? 0)}
                         °↓{" "}
@@ -234,7 +207,7 @@ export default function Home() {
 
             </div>
             <div className="flex gap-4">
-            <Container className="w-fit  justify-center flex-col px-4 items-center ">
+            <Container className="w-fit  justify-center flex-col px-6 items-center ">
                   <p className=" capitalize text-center">
                     {todayData?.weather[0].description}{" "}
                   </p>
