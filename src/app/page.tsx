@@ -148,13 +148,6 @@ export default function Home() {
       <main className="px-3 py-2 max-w-7xl mx-auto flex flex-col gap-9 w-full">
 
       {/* Today's data */}
-      {loadingCity ? (
-        <div
-        className="flex flex-col gap-4 min-h-screen w-full items-center justify-center">
-          <WeatherSkeleton />
-        </div>
-      ) : (
-        <>
       <section className="space-y-4">
         <div className="space-y-2">
            <h2 className="flex gap-1 text-2xl items-end text-gray-500">Today</h2>
@@ -295,8 +288,6 @@ export default function Home() {
                 />
               ))}
       </section>
-    </>
-    )}
   </main>
   </div>
   );
