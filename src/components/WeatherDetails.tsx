@@ -1,8 +1,9 @@
 import React from "react";
 import { LuEye, LuSunrise, LuSunset } from "react-icons/lu";
-import { FiDroplet } from "react-icons/fi";
 import { MdAir } from "react-icons/md";
-import { ImMeter } from "react-icons/im";
+import { GiSunrise, GiSunset, GiSpeedometer, GiWindSlap } from "react-icons/gi";
+import { BsFillDropletFill } from "react-icons/bs";
+import { FaEye } from "react-icons/fa";
 
 export interface WeatherDetailProps {
   visability: string;
@@ -26,32 +27,32 @@ export default function WeatherDetails(props: WeatherDetailProps) {
   return (
     <>
       <SingleWeatherDetail
-        icon={<LuSunrise />}
+        icon={<GiSunrise className="text-amber-400 text-4xl"/>}
         information="Sunrise"
         value={sunrise}
       />
       <SingleWeatherDetail
-        icon={<LuSunset />}
+        icon={<GiSunset className="text-amber-400 text-4xl"/>}
         information="Sunset"
         value={sunset}
       />
       <SingleWeatherDetail
-        icon={<LuEye />}
+        icon={<FaEye />}
         information="Visability"
         value={visability}
       />
       <SingleWeatherDetail
-        icon={<FiDroplet />}
+        icon={<BsFillDropletFill />}
         information="Humidity"
         value={humidity}
       />
       <SingleWeatherDetail
-        icon={<MdAir />}
+        icon={<GiWindSlap />}
         information="Wind speed"
         value={windSpeed}
       />
       <SingleWeatherDetail
-        icon={<ImMeter />}
+        icon={<GiSpeedometer />}
         information="Air Pressure"
         value={airPressure}
       />

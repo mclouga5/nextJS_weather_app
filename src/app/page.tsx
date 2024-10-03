@@ -18,6 +18,8 @@ import { loadingCityAtom, placeAtom } from "./atom";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { getBackgroundImage } from "@/utils/getBackgroundImage";
+import { cn } from "@/utils/cn"
+import Map from "@/components/Maps";
 import 'animate.css';
 
 interface WeatherDetail {
@@ -83,7 +85,7 @@ export default function Home() {
     queryKey: ['repoData'],
     queryFn: async () => {
       const {data} = await axios.get(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${place}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`
+        `https://api.openweathermap.org/data/2.5/forecast?q=${place.city}&appid=${process.env.NEXT_PUBLIC_WEATHER_KEY}&cnt=56`
       );
       return data;
     }
@@ -136,15 +138,21 @@ export default function Home() {
     );
 
   return (
-    <div className="animate__animated animate__fadeIn flex flex-col gap-4 min-h-screen bg-gray-100">
+    <div className=
+    {cn("animate__animated animate__fadeIn flex flex-col gap-4 min-h-screen",
+      !loadingCity ? "bg-gradient-to-t from-sky-300 from 20% to-sky-100" : "bg-gray-100"
+     )}>
       <Navbar
       location={data?.city.name}/>
 
-      <main className="px-3 py-4 max-w-7xl mx-auto flex flex-col gap-9 w-full">
+      <main className="px-3 py-2 max-w-7xl mx-auto flex flex-col gap-9 w-full">
 
       {/* Today's data */}
       {loadingCity ? (
-        <WeatherSkeleton />
+        <div
+        className="flex flex-col gap-4 min-h-screen w-full items-center justify-center">
+          <WeatherSkeleton />
+        </div>
       ) : (
         <>
       <section className="space-y-4">
@@ -241,7 +249,14 @@ export default function Home() {
                   />
             </Container>
         </div>
+
+        <Map
+        lat={place.coordinates.lat ?? 0}
+        lon={place.coordinates.lon  ?? 0}
+        city={place.city}
+        className={"animate__animated animate__fadeIn animate__slow"}/>
       </section>
+
 
       {/* 7 day forecast data*/}
       <section className="flex w-full flex-col gap-4">
@@ -270,6 +285,7 @@ export default function Home() {
                   visability={`${metersToKilometers(d?.visibility ?? 10000)} `}
                   windSpeed={`${convertWindSpeed(d?.wind.speed ?? 1.64)} `}
                   className="opacity-0"
+                  index={i}
                   style={{
                     backgroundImage: `url(${getBackgroundImage(
                       d?.weather[0].main ?? '', d?.weather[0].description ?? '').src})`,
@@ -288,7 +304,7 @@ export default function Home() {
 
 function WeatherSkeleton() {
   return (
-    <section className="space-y-8 ">
+    <section className="space-y-8">
       {/* Today's data skeleton */}
       <div className="space-y-2 animate-pulse">
         {/* Date skeleton */}

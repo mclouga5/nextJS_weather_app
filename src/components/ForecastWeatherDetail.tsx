@@ -16,6 +16,7 @@ export interface ForecastWeatherDetailProps extends WeatherDetailProps {
   temp_max: number;
   description: string;
   style: any;
+  index: number;
   className: string;
 }
 
@@ -32,6 +33,7 @@ export default function ForecastWeatherDetail(
     temp_max,
     description,
     style,
+    index,
     className
   } = props;
   const { ref, inView } = useInView({
@@ -54,10 +56,15 @@ export default function ForecastWeatherDetail(
     if (!inView && hasAnimated) {
       const timeoutId = setTimeout(() => {
         setIsVisible(false);
-      }, 5000);
+      }, 3000);
       return () => clearTimeout(timeoutId);
     }
   }, [inView, hasAnimated]);
+
+  const animationClass =
+    index % 2 === 0
+      ? "animate__animated animate__fadeInLeft"
+      : "animate__animated animate__fadeInRight";
 
   return (
     <Container
@@ -66,13 +73,15 @@ export default function ForecastWeatherDetail(
      {cn(
       "gap-4",
       props.className,
-      isVisible ? "animate__animated animate__fadeIn animate__slow" : "animate__animated animate__fadeOut animate__slow",)}>
+      isVisible
+          ? `${animationClass} animate__slow`
+          : "animate__animated animate__fadeOut opacity-0")}>
       {/* left */}
       <section className="flex gap-10 items-center pl-4">
         <div className=" flex flex-col gap-1 items-center rounded p-2 px-6 ml-2 my-2" style={style}>
           <WeatherIcon iconname={weatherIcon} />
-          <p className="bg-gray-200/60 rounded p-1">{date}</p>
-          <p className="text-sm bg-gray-200/60 rounded p-1">{day} </p>
+          <p className="bg-gray-200/60 rounded p-1">{day} </p>
+          <p className="bg-gray-200/60 rounded p-1 text-sm">{date}</p>
         </div>
 
         {/*  */}
