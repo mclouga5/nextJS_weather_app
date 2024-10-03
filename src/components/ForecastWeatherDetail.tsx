@@ -1,8 +1,10 @@
-import React from "react";
+ import {useEffect, useState } from "react";
 import Container from "./Container";
 import WeatherIcon from "./WeatherIcon";
 import WeatherDetails, { WeatherDetailProps } from "./WeatherDetails";
 import { convertKelvinToCelsius } from "@/utils/KelvinToCelsius";
+import { cn } from "@/utils/cn"
+import { useInView } from "react-intersection-observer";
 
 export interface ForecastWeatherDetailProps extends WeatherDetailProps {
   weatherIcon: string;
@@ -14,6 +16,7 @@ export interface ForecastWeatherDetailProps extends WeatherDetailProps {
   temp_max: number;
   description: string;
   style: any;
+  className: string;
 }
 
 export default function ForecastWeatherDetail(
@@ -28,11 +31,42 @@ export default function ForecastWeatherDetail(
     temp_min,
     temp_max,
     description,
-    style
+    style,
+    className
   } = props;
+  const { ref, inView } = useInView({
+    triggerOnce: false,
+    threshold: 0.4,
+  });
+
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (inView) {
+      setIsVisible(true);
+      setHasAnimated(true);
+    }
+  }, [inView]);
+
+  // Hide the component after it leaves the viewport, after some delay
+  useEffect(() => {
+    if (!inView && hasAnimated) {
+      const timeoutId = setTimeout(() => {
+        setIsVisible(false);
+      }, 5000);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [inView, hasAnimated]);
+
   return (
     <Container
-     className="gap-4">
+    ref={ref}
+     className=
+     {cn(
+      "gap-4",
+      props.className,
+      isVisible ? "animate__animated animate__fadeIn animate__slow" : "animate__animated animate__fadeOut animate__slow",)}>
       {/* left */}
       <section className="flex gap-10 items-center pl-4">
         <div className=" flex flex-col gap-1 items-center rounded p-2 px-6 ml-2 my-2" style={style}>

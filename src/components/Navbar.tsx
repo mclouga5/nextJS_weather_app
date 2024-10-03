@@ -9,6 +9,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { loadingCityAtom, placeAtom } from '@/app/atom';
+import 'animate.css';
 
 type Props = { location?: string };
 
@@ -94,7 +95,7 @@ export default function Navbar({ location }: Props) {
             <p className='text-gray-500 text-3xl'>Weather</p>
             <GiStripedSun className='text-3xl mt-1 text-amber-300' />
           </h2>
-          <p className='text-xs mb-1 text-gray-600 font-serif'>By Aoife</p>
+          <p className='text-xs mb-1 text-gray-600 font-serif animate__animated animate__bounce animate__slow'>By Aoife</p>
           </div>
 
           <section className='flex gap-4 items-center'>

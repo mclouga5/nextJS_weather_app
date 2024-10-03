@@ -18,6 +18,7 @@ import { loadingCityAtom, placeAtom } from "./atom";
 import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { getBackgroundImage } from "@/utils/getBackgroundImage";
+import 'animate.css';
 
 interface WeatherDetail {
   dt: number;
@@ -104,7 +105,7 @@ export default function Home() {
     return data?.list.find((entry) => {
       const entryDate = new Date(entry.dt * 1000).toISOString().split("T")[0];
       const entryTime = new Date(entry.dt * 1000).getHours();
-      return entryDate === date && entryTime >= 9;
+      return entryDate === date && entryTime >= 6;
     });
   });
 
@@ -126,8 +127,6 @@ export default function Home() {
     todayData?.weather[0].description ?? ''
   );
 
-  console.log(todayData);
-
   if (isPending)
     return(
     <div
@@ -137,7 +136,7 @@ export default function Home() {
     );
 
   return (
-    <div className="flex flex-col gap-4 min-h-screen bg-gray-100">
+    <div className="animate__animated animate__fadeIn flex flex-col gap-4 min-h-screen bg-gray-100">
       <Navbar
       location={data?.city.name}/>
 
@@ -153,7 +152,7 @@ export default function Home() {
            <h2 className="flex gap-1 text-2xl items-end text-gray-500">Today</h2>
 
            <Container
-           className="gap-10 px-6 items-center"
+           className="gap-10 px-6 items-center animate__animated animate__fadeInLeft animate__slow"
            >
             <div
             className="flex flex-col gap-1 items-center rounded p-2 px-6 my-2"
@@ -217,8 +216,8 @@ export default function Home() {
 
            {/* Extra details on today's weather */}
             </div>
-            <div className="flex gap-4">
-            <Container className="w-fit justify-center flex-col px-8 items-center ">
+            <div className="flex gap-4 animate__animated animate__fadeInRight animate__slow">
+            <Container className="w-fit justify-center flex-col px-8 items-center">
                   <p className=" capitalize text-center">
                     {todayData?.weather[0].description}{" "}
                   </p>
@@ -270,6 +269,7 @@ export default function Home() {
                   )}
                   visability={`${metersToKilometers(d?.visibility ?? 10000)} `}
                   windSpeed={`${convertWindSpeed(d?.wind.speed ?? 1.64)} `}
+                  className="opacity-0"
                   style={{
                     backgroundImage: `url(${getBackgroundImage(
                       d?.weather[0].main ?? '', d?.weather[0].description ?? '').src})`,
@@ -309,7 +309,7 @@ function WeatherSkeleton() {
         </div>
       </div>
 
-      <p className="animate-bounce w-full text-center justify-center font-semibold text-gray-500"> Loading...</p>
+      <p className="w-full text-center justify-center font-semibold text-gray-500"> Loading...</p>
 
       {/* 7 days forecast skeleton */}
       <div className="flex flex-col gap-4 animate-pulse">
