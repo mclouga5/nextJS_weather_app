@@ -13,7 +13,7 @@ const geistSans = localFont({
   weight: "100 900",
 });
 
-export const poppins = Poppins({ weight: ['400'], subsets: ['latin'] });
+const poppins = Poppins({ weight: ['400'], subsets: ['latin'] });
 
 export default function RootLayout({
   children,
