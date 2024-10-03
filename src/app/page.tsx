@@ -1,7 +1,7 @@
 'use client'
 
 import Navbar from "@/components/Navbar";
-import Image from "next/image";
+import dynamic from 'next/dynamic';
 import { useQuery } from '@tanstack/react-query'
 import axios from "axios";
 import { format, parseISO, fromUnixTime } from "date-fns";
@@ -19,7 +19,6 @@ import { useAtom } from "jotai";
 import { useEffect } from "react";
 import { getBackgroundImage } from "@/utils/getBackgroundImage";
 import { cn } from "@/utils/cn"
-import Map from "@/components/Maps";
 import 'animate.css';
 
 interface WeatherDetail {
@@ -76,6 +75,8 @@ interface WeatherData {
     sunset: number;
   };
 }
+
+const MapComponent = dynamic(() => import('@/components/Maps'), { ssr: false });
 
 export default function Home() {
   const [place] = useAtom(placeAtom);
@@ -243,7 +244,7 @@ export default function Home() {
             </Container>
         </div>
 
-        <Map
+        <MapComponent
         lat={place.coordinates.lat ?? 0}
         lon={place.coordinates.lon  ?? 0}
         city={place.city}
