@@ -1,11 +1,10 @@
 'use client';
 
 import React from 'react';
-import { MdOutlineLocationOn } from 'react-icons/md';
 import { GiStripedSun } from "react-icons/gi";
-import { MdMyLocation } from 'react-icons/md';
+import { MdMyLocation, MdLocationPin } from 'react-icons/md';
 import SearchBox from './SearchBox';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAtom } from 'jotai';
 import { loadingCityAtom, placeAtom } from '@/app/atom';
@@ -14,6 +13,13 @@ import 'animate.css';
 type Props = { location?: string };
 
 const API_KEY = process.env.NEXT_PUBLIC_WEATHER_KEY;
+
+interface CitySuggestion {
+  name: string;
+  country: string;
+  lat: number;
+  lon: number;
+}
 
 export default function Navbar({ location }: Props) {
   const [city, setCity] = useState('');
@@ -31,8 +37,12 @@ export default function Navbar({ location }: Props) {
         const response = await axios.get(
           `https://api.openweathermap.org/data/2.5/find?q=${value}&appid=${API_KEY}`
         );
-
-        const suggestions = response.data.list.map((item: any) => String(item.name + ', ' + item.sys.country));
+        const suggestions = response.data.list.map((item: any) => ({
+          name: item.name,
+          country: item.sys.country,
+          lat: item.coord.lat,
+          lon: item.coord.lon,
+        }));
         setSuggestions(suggestions);
         setError('');
         setShowSuggestions(true);
@@ -46,9 +56,20 @@ export default function Navbar({ location }: Props) {
     }
   }
 
-  function handleSuggestionClick(value: string) {
-    setCity(value);
-    setShowSuggestions(false);
+  function handleSuggestionClick(suggestion: CitySuggestion) {
+    setLoadingCity(true);
+    setTimeout(() => {
+      setLoadingCity(false);
+      setCity(`${suggestion.name}, ${suggestion.country}`);
+      setPlace({
+        city: suggestion.name,
+        coordinates: {
+          lat: suggestion.lat,
+          lon: suggestion.lon,
+        },
+      });
+      setShowSuggestions(false);
+    }, 1000);
   }
 
   function handleSubmitSearch(e: React.FormEvent<HTMLFormElement>) {
@@ -61,7 +82,13 @@ export default function Navbar({ location }: Props) {
       setError('');
       setTimeout(() => {
         setLoadingCity(false);
-        setPlace(city);
+        setPlace(
+          {city: place.city,
+          coordinates:
+          {lat: place.coordinates.lat,
+          lon: place.coordinates.lon
+          }
+        });
         setShowSuggestions(false);
       }, 500);
     }
@@ -78,7 +105,13 @@ export default function Navbar({ location }: Props) {
           );
           setTimeout(() => {
             setLoadingCity(false);
-            setPlace(response.data.name);
+            setPlace(
+              {city: response.data.name,
+              coordinates:
+              {lat: response.data.coord.lat,
+                lon: response.data.coord.lon
+              }
+            });
           }, 1000);
         } catch (error) {
           setLoadingCity(false);
@@ -86,6 +119,7 @@ export default function Navbar({ location }: Props) {
       });
     }
   }
+
   return (
     <>
       <nav className='shadow-sm  sticky top-0 left-0 z-50 bg-white'>
@@ -100,13 +134,13 @@ export default function Navbar({ location }: Props) {
 
           <section className='flex gap-4 items-center'>
             <MdMyLocation
-              title='Your Current Location'
+              title='Current Location (may take a few seconds)'
               onClick={handleCurrentLocation}
               className='text-2xl text-gray-500 hover:opacity-80 cursor-pointer'
             />
             <div className='flex items-center'>
-              <MdOutlineLocationOn className='text-3xl text-gray-600' />
-              <p className='text-slate-900/80 text-sm'> {location} </p>
+              <MdLocationPin className='text-3xl text-gray-600' />
+              <p className='text-slate-900/80 text-sm mt-1'> {location} </p>
             </div>
             <div className='relative hidden md:flex'>
 
@@ -158,14 +192,15 @@ function SuggetionBox({
   error
 }: {
   showSuggestions: boolean;
-  suggestions: string[];
-  handleSuggestionClick: (item: string) => void;
+  suggestions: CitySuggestion[];
+  handleSuggestionClick: (item: CitySuggestion) => void;
   error: string;
 }) {
   return (
     <>
       {((showSuggestions && suggestions.length > 1) || error) && (
-        <ul className='mb-4 bg-white absolute border top-[44px] left-0 border-gray-300 rounded-md min-w-[200px]  flex flex-col gap-1 py-2 px-2'>
+        <ul className='mb-4 bg-white absolute border top-[44px] left-0 border-gray-300
+        rounded-md min-w-[200px]  flex flex-col gap-1 py-2 px-2 z-50 overflow-auto'>
           {error && suggestions.length < 1 && (
             <li className='text-red-500 p-1 '> {error}</li>
           )}
@@ -175,7 +210,7 @@ function SuggetionBox({
               onClick={() => handleSuggestionClick(item)}
               className='cursor-pointer p-1 rounded   hover:bg-gray-200'
             >
-              {item}
+             {item.name}, {item.country}
             </li>
           ))}
         </ul>
